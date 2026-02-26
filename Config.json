@@ -1,0 +1,19 @@
+{
+    "targets": [
+        {
+            "user": "cadman",
+            "password": "Cadman!13",
+            "ip": "192.168.100.129"
+        },
+        {
+            "user": "cadman",
+            "password": "Cadman!13",
+            "ip": "192.168.100.128"
+        },
+        {
+            "user": "user",
+            "password": "pass",
+            "ip": "x.x.x.x"
+        }
+    ]
+}

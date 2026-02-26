@@ -1,0 +1,11 @@
+Orchestrate config - configures the targets 
+    Usage:
+        Orchestrate config <option> <string>
+    Options:
+        -a: 
+            Adds the target specified after option to targets.json
+            Usage: Orchestrate config -a "user:pass@x.x.x.x"
+
+        -r: 
+            Removes the target specified after option from targets.json
+            Usage: Orchestrate config -r "x.x.x.x"

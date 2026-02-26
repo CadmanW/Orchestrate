@@ -1,0 +1,19 @@
+Orchestrate run - runs the command specified on targets specified
+    Usage:
+        Orchestrate run <options>
+    Options:
+        -x:
+            Command to run
+            Usage: Orchestrate run -x "<cmd>" <target>
+
+        -t:
+            Specify target to run command on
+            Usage: Orchestrate run -x <cmd> -t "x.x.x.x"
+
+        -T:
+            Specify multiple targets to run command, seperated by a space in the quotes
+            Usage: Orchestrate run -x "<cmd" -T "x.x.x.x y.y.y.y z.z.z.z"
+        
+        -a:
+            Runs command on all targets
+            Usage: Orchestrate run -x "<cmd>" -a
