@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	config "Orchestrate/Config"
+	utils "Orchestrate/Utils"
 
 	ssh_lib "golang.org/x/crypto/ssh"
 )
@@ -41,6 +42,7 @@ func HandleRunCommand(args []string) {
 	// Make sure that a command was given
 	if flag_cmd == "" {
 		fmt.Print("\n[Orchestrate]\n\tNo command was given\n\n")
+		utils.PrintManPage("run")
 	}
 
 	/**********************

@@ -5,6 +5,7 @@ import (
 	ssh "Orchestrate/SSH"
 	utils "Orchestrate/Utils"
 	"os"
+	"fmt"
 )
 
 func main() {
@@ -26,6 +27,7 @@ func main() {
 		ssh.HandleRunCommand(os.Args[2:])
 	default:
 		// If command is unknown, print the manual
+		fmt.Printf("\n[Orchestrate]\n\tUknown command: %s\n\n", os.args[1])
 		utils.PrintManPage("orchestrate")
 	}
 }
