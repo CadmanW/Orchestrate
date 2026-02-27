@@ -100,7 +100,7 @@ func runCommand(targets []config.Target, cmd string) {
 
 		user := targets[i].User
 		pass := targets[i].Pass
-		ip := fmt.Sprintf("%s/22", targets[i].IP)
+		ip := fmt.Sprintf("%s:22", targets[i].IP)
 
 		// Configure the client config used to start SSH session
 		ssh_config := &ssh_lib.ClientConfig{
