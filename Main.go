@@ -2,8 +2,9 @@ package main
 
 import (
 	config "Orchestrate/Config"
-	ssh "Orchestrate/SSH"
-	utils "Orchestrate/Utils"
+	run "Orchestrate/Run"
+	upload "Orchestrate/Upload"
+	"fmt"
 	"os"
 )
 
@@ -14,7 +15,7 @@ func main() {
 	**********************/
 	// If no command is provided, print the manual
 	if len(os.Args) == 1 {
-		utils.PrintManPage("orchestrate")
+		printManPage()
 		return
 	}
 
@@ -23,9 +24,28 @@ func main() {
 	case "config":
 		config.HandleConfigCommand(os.Args[2:])
 	case "run":
-		ssh.HandleRunCommand(os.Args[2:])
+		run.HandleRunCommand(os.Args[2:])
+	case "upload":
+		upload.HandleUploadCommand(os.Args[2:])
 	default:
 		// If command is unknown, print the manual
-		utils.PrintManPage("orchestrate")
+		printManPage()
 	}
+}
+
+/*
+* Prints the man page to the console
+ */
+func printManPage() error {
+	// Read man page
+	data, err := os.ReadFile("man.txt")
+	if err != nil {
+		return fmt.Errorf("Error reading man page: ", err)
+	}
+
+	// Output man page
+	fmt.Println(string(data))
+
+	// Return nil on success
+	return nil
 }

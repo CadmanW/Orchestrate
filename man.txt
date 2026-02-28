@@ -1,0 +1,72 @@
+[Orchestrate] - Tool for remote script execution and hardening via SSH
+    Usage:
+        Orchestrate <command> <options> <string>
+        Orchestrate <command> <string>
+
+COMMANDS:   
+
+    config - configures the targets 
+        Usage:
+            Orchestrate config <options>
+        Options:
+            -a: 
+                Adds the target specified after option to targets.json
+                Usage: Orchestrate config -a "user:pass@x.x.x.x"
+
+            -r: 
+                Removes the target specified after option from targets.json
+                Usage: Orchestrate config -r "x.x.x.x"
+
+
+    run - runs the command specified on targets specified
+        Usage:
+            Orchestrate run <options>
+        Options:
+            -x:
+                Command to run
+                Usage: Orchestrate run -x "<cmd>" <target>
+
+            -s:
+                Run command with sudo
+                Usage: Usage: Orchestrate run -x "<cmd>" <target> -s
+
+            -t:
+                Specify target to run command on
+                Usage: Orchestrate run -x <cmd> -t "x.x.x.x"
+
+            -T:
+                Specify multiple targets to run command, seperated by a space in the quotes
+                Usage: Orchestrate run -x "<cmd" -T "x.x.x.x y.y.y.y z.z.z.z"
+            
+            -a:
+                Runs command on all targets
+                Usage: Orchestrate run -x "<cmd>" -a
+
+
+    upload - upload files to targets specified
+        Usage:
+            Orchestrate upload <options>
+        Options:
+            -f:
+                Upload a single file to targets specified
+                Usage: Orchestrate upload -f "<path-to-file>" <targets>
+
+            -F:
+                Upload a directory and all subdirectories to targets specified
+                Usage: Orchestrate upload -F "<path-to-directory>" <targets>
+            
+            -d:
+                Specify destination for file upload
+                Usage: Orchrestrate upload <file> <targets> -d <destination-path>
+
+            -t:
+                Specify target to upload files to
+                Usage: Orchestrate upload <option> <filepath> -t "x.x.x.x" <destination>
+
+            -T:
+                Specify multiple targets to run command, seperated by a space in the quotes
+                Usage: Orchestrate upload <option> <filepath> -T "x.x.x.x y.y.y.y z.z.z.z" <destination>
+
+            -a:
+                Uploads file(s) to all targets
+                Usage: Orchestrate upload <option> <filepath> -a <destination>

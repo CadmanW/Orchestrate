@@ -1,7 +1,6 @@
 package config
 
 import (
-	utils "Orchestrate/Utils"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -39,29 +38,30 @@ func HandleConfigCommand(args []string) {
 	// Parse the provided args slice
 	err := flagSet.Parse(args)
 	if err != nil {
-		return
+		log.Fatalf("\n[Orchestrate] config\n\tError when parsing args: %s\n\n", err)
 	}
 
 	// ADD TARGET
 	if flag_add != "" {
-		AddTarget(flag_add)
-		return
+		err := AddTarget(flag_add)
+		if err != nil {
+			log.Fatalf("\n[Orchestrate] config\n\tError adding target to Config.json: %s\n\n", err)
+		}
 	}
 
 	// REMOVE TARGET
 	if flag_remove != "" {
-		RemoveTarget(flag_remove)
-		return
+		err := RemoveTarget(flag_remove)
+		if err != nil {
+			log.Fatalf("\n[Orchestrate] config\n\tError removing target from Config.json: %s\n\n", err)
+		}
 	}
-
-	// No valid option provided
-	utils.PrintManPage("config")
 }
 
 /*
 * Adds a target to the config
  */
-func AddTarget(targetArg string) {
+func AddTarget(targetArg string) error {
 	// Normalize the target argument so we can split it up
 	// user:pass@ip --> user:pass:ip
 	normalized := strings.ReplaceAll(targetArg, "@", ":")
@@ -72,11 +72,7 @@ func AddTarget(targetArg string) {
 
 	// Make sure user:pass@ip format was followed
 	if len(parts) != 3 {
-		fmt.Printf(
-			"\n[Orchestrate]\n\tInvalid target format: %s\n\tUse: username:password@127.0.0.1\n\n",
-			targetArg,
-		)
-		return
+		return fmt.Errorf("Invalid target format: %s ; Use: username:password@127.0.0.1", targetArg)
 	}
 
 	// Get use pass and ip from the split up target argument
@@ -93,15 +89,18 @@ func AddTarget(targetArg string) {
 	Write_config(config)
 
 	fmt.Printf(
-		"\n[Orchestrate]\n\tAdded target to config:\n\tUser: %s\n\tPass: %s\n\tIP:   %s\n\n",
+		"\n[Orchestrate] config\n\tAdded target to config:\n\tUser: %s\n\tPass: %s\n\tIP:   %s\n\n",
 		user, pass, ip,
 	)
+
+	// return nil on success
+	return nil
 }
 
 /*
 * Removes a target from the config by IP
  */
-func RemoveTarget(targetIP string) {
+func RemoveTarget(targetIP string) error {
 	// Load the current config into the Config struct
 	var config Config
 	LoadConfig(&config)
@@ -114,47 +113,97 @@ func RemoveTarget(targetIP string) {
 			// Write the new config to Config.json
 			Write_config(config)
 			fmt.Printf(
-				"\n[Orchestrate]\n\tRemoved target %s from Config.json\n\n",
+				"\n[Orchestrate] config\n\tRemoved target %s from Config.json\n\n",
 				targetIP,
 			)
-			return
+			// return nil on success
+			return nil
 		}
 	}
 
 	// If nothing was found, specified IP does not match any targets in Config.json
-	fmt.Printf(
-		"\n[Orchestrate]\n\tIP: %s was not found in Config.json\n\n",
-		targetIP,
-	)
+	return fmt.Errorf("IP: %s was not found in Config.json", targetIP)
 }
 
 /*
 * loads the config into a Config struct passed into the function as a pointer
  */
-func LoadConfig(config *Config) {
+func LoadConfig(config *Config) error {
 	// Read the file
 	configFile, err := os.ReadFile("Config.json")
 	if err != nil {
-		log.Fatal("Error reading Config.json:", err)
+		return fmt.Errorf("Error reading Config.json: %s", err)
 	}
 
 	// Parse the JSON bytes into a GO struct (Config)
 	err = json.Unmarshal(configFile, config)
 	if err != nil {
-		log.Fatal("Error parsing Config.json:", err)
+		return fmt.Errorf("Error unmarshaling Config.json: %s", err)
 	}
+
+	// Return nil on success
+	return nil
 }
 
-func Write_config(config Config) {
+/*
+* Writes the config to Config.json
+ */
+func Write_config(config Config) error {
 	// Parse the config struct into a JSON byte slice
 	jsonData, err := json.MarshalIndent(config, "", "    ")
 	if err != nil {
-		log.Fatal("Error writing to Config.json:", err)
+		return fmt.Errorf("Error writing to Config.json: %s", err)
 	}
 
 	// Write new config to Config.json
 	err = os.WriteFile("Config.json", jsonData, 0644)
 	if err != nil {
-		log.Fatal("Error writing to Config.json:", err)
+		return fmt.Errorf("Error writing to Config.json: %s", err)
 	}
+
+	// Return nil on success
+	return nil
+}
+
+/*
+* Returns targets based on the flags provided
+ */
+func GetTargets(t string, T string, a bool) []Target {
+	var targets []Target
+	// Load the config into the Config struct
+	var conf Config
+	LoadConfig(&conf)
+
+	// Check for arg -t
+	if t != "" {
+		// Iterate through conf.Targets, checking if it has the IP specified
+		for i := range conf.Targets {
+			if t == conf.Targets[i].IP {
+				targets = append(targets, conf.Targets[i])
+			}
+		}
+	}
+
+	// Check for arg -T
+	if T != "" {
+
+		// Split the arg string into an array of IPs
+		targetIPs := strings.Split(T, " ")
+
+		// Iterate through conf.Targets, checking if it has one of the IPs specified
+		for i := range conf.Targets {
+			for j := range targetIPs {
+				if conf.Targets[i].IP == targetIPs[j] {
+					targets = append(targets, conf.Targets[i])
+				}
+			}
+		}
+	}
+
+	// Check for arg -a
+	if a {
+		targets = append(targets, conf.Targets...)
+	}
+
+	return targets
 }
