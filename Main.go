@@ -40,7 +40,7 @@ func printManPage() error {
 	// Read man page
 	data, err := os.ReadFile("man.txt")
 	if err != nil {
-		return fmt.Errorf("Error reading man page: ", err)
+		return fmt.Errorf("Error reading man page: %s", err)
 	}
 
 	// Output man page
