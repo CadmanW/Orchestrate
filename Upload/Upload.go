@@ -17,6 +17,7 @@ func HandleUploadCommand(args []string) {
 	var flag_file string
 	var flag_directory string
 	var flag_destination string
+	var flag_exe bool
 
 	var flag_targetIP string
 	var flag_targetIPs string
@@ -26,6 +27,7 @@ func HandleUploadCommand(args []string) {
 	flagSet.StringVar(&flag_file, "f", "", "File to upload")
 	flagSet.StringVar(&flag_directory, "F", "", "Directory to upload")
 	flagSet.StringVar(&flag_destination, "d", "", "Destination to upload files to")
+	flagSet.StringVar(&flag_exe, "x", "", "Execute uploaded file")
 
 	flagSet.StringVar(&flag_targetIP, "t", "", "Specify target to upload file(s) to")
 	flagSet.StringVar(&flag_targetIPs, "T", "", "Specify multiple targets to upload file(s) to, seperated by a space in the quotes")
@@ -55,7 +57,7 @@ func HandleUploadCommand(args []string) {
 	// Also make sure file(s) were provided
 	for i := range targets {
 		if flag_file != "" {
-			err = uploadFile(targets[i], flag_file, flag_destination)
+			err = uploadFile(targets[i], flag_file, flag_destination, flag_exe)
 		} else if flag_directory != "" {
 			err = uploadDirectory(targets[i], flag_directory, flag_destination)
 		} else {
@@ -70,7 +72,7 @@ func HandleUploadCommand(args []string) {
 }
 
 // Helper function to upload a file
-func uploadFile(target config.Target, filePath string, destinationPath string) error {
+func uploadFile(target config.Target, filePath string, destinationPath string, execute bool) error {
 	// Create the connection to the target
 	client, err := goph.New(target.User, target.IP, goph.Password(target.Pass))
 	if err != nil {

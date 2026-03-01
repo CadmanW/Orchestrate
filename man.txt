@@ -50,6 +50,10 @@ COMMANDS:
             -f:
                 Upload a single file to targets specified
                 Usage: Orchestrate upload -f "<path-to-file>" <targets>
+                
+                -x:
+                    Execute uploaded file
+                    Usage: Orchestrate upload -f "<path-to-file>" <targets> -x
 
             -F:
                 Upload a directory and all subdirectories to targets specified
