@@ -27,7 +27,7 @@ func HandleUploadCommand(args []string) {
 	flagSet.StringVar(&flag_file, "f", "", "File to upload")
 	flagSet.StringVar(&flag_directory, "F", "", "Directory to upload")
 	flagSet.StringVar(&flag_destination, "d", "", "Destination to upload files to")
-	flagSet.StringVar(&flag_exe, "x", "", "Execute uploaded file")
+	flagSet.BoolVar(&flag_exe, "x", false, "Execute uploaded file")
 
 	flagSet.StringVar(&flag_targetIP, "t", "", "Specify target to upload file(s) to")
 	flagSet.StringVar(&flag_targetIPs, "T", "", "Specify multiple targets to upload file(s) to, seperated by a space in the quotes")
@@ -83,6 +83,25 @@ func uploadFile(target config.Target, filePath string, destinationPath string, e
 	err = client.Upload(filePath, destinationPath)
 	if err != nil {
 		return fmt.Errorf("Error uploading file: %s", err)
+	}
+
+	if execute {
+		// Create the connection to the target
+		client, err := goph.New(target.User, target.IP, goph.Password(target.Pass))
+		if err != nil {
+			return fmt.Errorf("Error connecting to target: %s", err)
+		}
+		defer client.Close()
+
+		_, err = client.Run(fmt.Sprintf("chmod +x %s", destinationPath))
+		if err != nil {
+			return err
+		}
+
+		output, err := client.Run(fmt.Sprintf("./%s", destinationPath))
+
+		fmt.Printf("[Orchestrate] upload\n\tUploaded file %s to %s at %s and executed successfully\n\t%s\n\n", filePath, target.IP, destinationPath, output)
+		return nil
 	}
 
 	// return nil on success
