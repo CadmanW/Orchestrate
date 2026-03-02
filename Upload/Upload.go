@@ -4,7 +4,9 @@ import (
 	config "Orchestrate/Config"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
+	"path/filepath"
 
 	"github.com/melbahja/goph"
 )
@@ -109,7 +111,7 @@ func uploadFile(target config.Target, filePath string, destinationPath string, e
 	return nil
 }
 
-// TODO Helper function to upload a directory
+// Helper function to upload a directory
 func uploadDirectory(target config.Target, directoryPath string, destinationPath string) error {
 	// Create the connection to the target
 	client, err := goph.New(target.User, target.IP, goph.Password(target.Pass))
@@ -118,8 +120,31 @@ func uploadDirectory(target config.Target, directoryPath string, destinationPath
 	}
 	defer client.Close()
 
-	//TODO upload the directory
+	return filepath.WalkDir(directoryPath, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
 
-	// Return nil on success
-	return nil
+		localPath, err := filepath.Rel(directoryPath, path)
+		if err != nil {
+			return err
+		}
+
+		// Construct the remote path and ensure it uses forward slashes
+		remoteFullPath := filepath.ToSlash(filepath.Join(destinationPath, localPath))
+
+		if d.IsDir() {
+			// Create the directory on the remote target; if it already exists, then whoop-de-do
+			client.Run(fmt.Sprintf("mkdir \"%s\"", remoteFullPath))
+		} else {
+			// Upload the file
+			err = client.Upload(path, remoteFullPath)
+			if err != nil {
+				return fmt.Errorf("failed to upload file %s: %w", path, err)
+			}
+			fmt.Printf("[Orchestrate] upload\n\tUploaded file %s to %s at %s successfully\n", path, target.IP, remoteFullPath)
+		}
+
+		return nil
+	})
 }
