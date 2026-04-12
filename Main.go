@@ -2,6 +2,7 @@ package main
 
 import (
 	config "Orchestrate/Config"
+	download "Orchestrate/Download"
 	run "Orchestrate/Run"
 	upload "Orchestrate/Upload"
 	"fmt"
@@ -27,6 +28,8 @@ func main() {
 		run.HandleRunCommand(os.Args[2:])
 	case "upload":
 		upload.HandleUploadCommand(os.Args[2:])
+	case "download":
+		download.HandleDownloadCommand(os.Args[2:])
 	default:
 		// If command is unknown, print the manual
 		printManPage()

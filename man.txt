@@ -49,7 +49,7 @@ COMMANDS:
         Options:
             -f:
                 Upload a single file to targets specified
-                Usage: Orchestrate upload -f "<path-to-file>" <targets>
+                Usage: Orchestrate upload -f "<path-to-file>" -d "<destination-path" <targets>
                 
                 -x:
                     Execute uploaded file
@@ -57,7 +57,7 @@ COMMANDS:
 
             -F:
                 Upload a directory and all subdirectories to targets specified
-                Usage: Orchestrate upload -F "<path-to-directory>" <targets>
+                Usage: Orchestrate upload -F "<path-to-directory>" -d "<destination-directory-path" <targets>
             
             -d:
                 Specify destination for file upload
@@ -68,9 +68,37 @@ COMMANDS:
                 Usage: Orchestrate upload <option> <filepath> -t "x.x.x.x" <destination>
 
             -T:
-                Specify multiple targets to run command, seperated by a space in the quotes
+                Specify multiple targets to upload to, seperated by a space in the quotes
                 Usage: Orchestrate upload <option> <filepath> -T "x.x.x.x y.y.y.y z.z.z.z" <destination>
 
             -a:
                 Uploads file(s) to all targets
                 Usage: Orchestrate upload <option> <filepath> -a <destination>
+
+    download - downloads a file or directory onto the local machine from target(s)
+        Usage:
+            Orchestrate download <options>
+        Options:
+            -f:
+                Download a single file from target(s) specified
+                Usage: Orchestrate download -f "<path-to-file>" <targets>
+
+            -F:
+                Download a directory and all subdirectories from target(s) specified
+                Usage: Orchestrate download -F "<path-to-directory>" -d "<destination-directory-path" <targets>
+            
+            -d:
+                Specify destination for file download
+                Usage: Orchrestrate download <file> <targets> -d <destination-path>
+
+            -t:
+                Specify target to download files from
+                Usage: Orchestrate download <option> <filepath> -t "x.x.x.x" <destination>
+
+            -T:
+                Specify multiple targets to download file(s) from, seperated by a space in the quotes
+                Usage: Orchestrate download <option> <filepath> -T "x.x.x.x y.y.y.y z.z.z.z" <destination>
+
+            -a:
+                Downloads file(s) from all targets
+                Usage: Orchestrate download <option> <filepath> -a <destination>
